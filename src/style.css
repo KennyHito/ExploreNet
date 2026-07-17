@@ -1,0 +1,780 @@
+/* ============================================================
+   全局样式表（style.css）
+   探索站 - 个人工具分享网站
+   说明：本文件使用 CSS 变量实现亮/暗双主题，
+        所有颜色、间距相关取值尽量引用变量，便于统一维护。
+   ============================================================ */
+
+/* ===== 主题变量 ===== */
+:root {
+  /* 页面整体背景色（亮色） */
+  --bg: #ffffff;
+  /* 次级背景色（如 hover、分区底色） */
+  --bg-secondary: #f5f5f7;
+  /* 卡片 / 浮层表面背景色 */
+  --surface: #ffffff;
+  /* 正文文字颜色 */
+  --text: #333333;
+  /* 标题文字颜色 */
+  --title: #111111;
+  /* 边框 / 分割线颜色 */
+  --border: #e2e2e7;
+  /* 主题强调色（链接、按钮、激活态） */
+  --accent: #0071e3;
+  /* 强调色 - 鼠标悬停 */
+  --accent-hover: #0077ed;
+  /* 强调色 - 按下激活 */
+  --accent-active: #006edb;
+  /* 轻投影（卡片默认） */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  /* 中投影（卡片悬停） */
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  /* 全局字体栈 */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+  /* 统一的过渡动画时长 */
+  --transition: 0.22s ease;
+  /* 备选背景色别名（兼容旧引用） */
+  --bg-alt: var(--bg-secondary);
+  /* About 页面文字行间距，可手动调整该数值（建议范围 1.4 ~ 2.0） */
+  --about-line-height: 1.5;
+}
+
+/* 暗色主题：仅覆盖颜色相关变量，结构样式无需改动 */
+[data-theme="dark"] {
+  --bg: #121212;
+  --bg-secondary: #1a1a1a;
+  --surface: #1e1e1e;
+  --text: #e5e5e5;
+  --title: #ffffff;
+  --border: #2c2c2e;
+  --accent: #2997ff;
+  --accent-hover: #47a6ff;
+  --accent-active: #0077ed;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.55);
+}
+
+/* ===== 基础重置 ===== */
+* {
+  /* 清除默认外边距 */
+  margin: 0;
+  /* 清除默认内边距 */
+  padding: 0;
+  /* 盒模型采用 border-box，padding 不撑大尺寸 */
+  box-sizing: border-box;
+}
+
+html {
+  /* 锚点 / 滚动平滑过渡 */
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  /* 全局默认行高 */
+  line-height: 1.6;
+  /* 字体抗锯齿，提升可读性 */
+  -webkit-font-smoothing: antialiased;
+  /* 主题切换时背景/文字平滑过渡 */
+  transition: background var(--transition), color var(--transition);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  /* 标题统一使用标题色 */
+  color: var(--title);
+}
+
+a {
+  /* 链接默认继承父级文字颜色 */
+  color: inherit;
+  /* 去掉下划线 */
+  text-decoration: none;
+}
+
+/* 通用居中容器：限制最大宽度并水平居中，左右留白 */
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 主内容区：保证至少占满视口大部分高度，避免页脚上贴 */
+main {
+  min-height: 60vh;
+}
+
+/* ===== 导航 ===== */
+.nav {
+  /* 吸顶：滚动时固定在顶部 */
+  position: sticky;
+  top: 0;
+  /* 层级高于内容，避免被遮挡 */
+  z-index: 100;
+  /* 改为 flex 布局：左 Logo+Tab，右操作区 */
+  display: flex;
+  align-items: center;
+  /* 两端对齐，中间留白 */
+  justify-content: space-between;
+  height: 52px;
+  padding: 0 22px;
+  /* 半透明背景，配合毛玻璃 */
+  background: rgba(255, 255, 255, 0.72);
+  /* 背景模糊（标准） */
+  backdrop-filter: saturate(180%) blur(20px);
+  /* 背景模糊（Safari 前缀） */
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  /* 底部细分割线 */
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition), border-color var(--transition);
+}
+
+/* 导航左侧分组：Logo 与 Tab 水平排列并保留间距 */
+.nav-left {
+  display: flex;
+  align-items: center;
+  /* Logo 与 Tab 之间的间距 */
+  gap: 24px;
+}
+
+/* 暗色下导航栏半透明背景 */
+[data-theme="dark"] .nav {
+  background: rgba(18, 18, 18, 0.72);
+}
+
+/* 站点 Logo 按钮 */
+.nav-logo {
+  justify-self: start;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background var(--transition), transform 0.1s ease;
+}
+
+/* Logo 悬停底色 */
+.nav-logo:hover {
+  background: var(--bg-secondary);
+}
+
+/* Logo 按下轻微缩小，提供点击反馈 */
+.nav-logo:active {
+  transform: scale(0.94);
+}
+
+/* Logo 图标内部图形（SVG）配色 */
+.logo-mark rect {
+  fill: var(--accent);
+}
+
+.logo-mark circle {
+  fill: #ffffff;
+}
+
+.logo-mark line {
+  stroke: #ffffff;
+  stroke-width: 1.5;
+}
+
+/* 导航右侧操作区（主题切换按钮所在） */
+.nav-actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+}
+
+/* Tab 列表容器：横向排列 */
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+/* 单个 Tab 文字 */
+.tab {
+  font-size: 15px;
+  /* 未激活时略淡 */
+  opacity: 0.85;
+  padding: 7px 16px;
+  /* 胶囊形状 */
+  border-radius: 980px;
+  cursor: pointer;
+  /* 不换行 */
+  white-space: nowrap;
+  color: var(--text);
+  transition: opacity var(--transition), color var(--transition), background var(--transition);
+}
+
+/* Tab 悬停：变清晰 + 浅色底 */
+.tab:hover {
+  opacity: 1;
+  background: var(--bg-secondary);
+}
+
+/* Tab 激活态：强调色文字 + 浅强调色底 */
+.tab.active {
+  opacity: 1;
+  color: var(--accent);
+  background: rgba(0, 113, 227, 0.1);
+}
+
+/* 暗色下激活态底色 */
+[data-theme="dark"] .tab.active {
+  background: rgba(41, 151, 255, 0.16);
+}
+
+/* 主题切换（日/夜）按钮 */
+.theme-toggle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  /* 不被压缩 */
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--title);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  transition: background var(--transition), transform 0.1s ease;
+}
+
+/* 主题切换按钮按下反馈 */
+.theme-toggle:active {
+  transform: scale(0.92);
+}
+
+/* ===== 页面切换动画（纯 CSS，挂载即播放，不依赖 transitionend） ===== */
+.page {
+  animation: pageIn 0.25s ease both;
+}
+
+/* 进入动画：从下方 8px、透明 渐显到原位 */
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== 通用区块 ===== */
+.page-section {
+  /* 上下区块间距 */
+  padding: 66px 0;
+}
+
+/* 区块标题区（居中） */
+.section-head {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.section-head h2 {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.section-head p {
+  color: var(--text);
+  opacity: 0.8;
+  font-size: 17px;
+  margin-top: 12px;
+}
+
+/* ===== 按钮 ===== */
+.btn {
+  font: 400 16px/1 var(--font-sans);
+  padding: 12px 22px;
+  /* 胶囊按钮 */
+  border-radius: 980px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-block;
+  transition: background var(--transition), color var(--transition), transform 0.1s ease;
+}
+
+/* 主按钮：实心强调色 */
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-primary:active {
+  background: var(--accent-active);
+  transform: scale(0.98);
+}
+
+/* 次按钮：描边样式 */
+.btn-secondary {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.btn-secondary:hover {
+  background: rgba(0, 113, 227, 0.08);
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+  background: rgba(41, 151, 255, 0.12);
+}
+
+/* ===== 卡片 ===== */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+
+/* 卡片悬停：轻微上浮 + 加深投影 */
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ===== 标签 / 徽章 ===== */
+.badge {
+  display: inline-block;
+  font: 500 13px/1 var(--font-sans);
+  color: var(--accent);
+  background: rgba(0, 113, 227, 0.1);
+  border-radius: 980px;
+  padding: 6px 12px;
+}
+
+[data-theme="dark"] .badge {
+  background: rgba(41, 151, 255, 0.16);
+}
+
+/* ===== Hero（首屏大标题区） ===== */
+.hero {
+  text-align: center;
+  padding: 120px 0 96px;
+}
+
+.hero .eyebrow {
+  font-size: 15px;
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: 18px;
+}
+
+.hero h1 {
+  /* 响应式字号：随视口宽度缩放 */
+  font-size: clamp(40px, 8vw, 72px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin-bottom: 22px;
+}
+
+.hero .lead {
+  font-size: 19px;
+  color: var(--text);
+  opacity: 0.85;
+  max-width: 640px;
+  /* 居中并保留下方间距 */
+  margin: 0 auto 28px;
+}
+
+.hero .intro {
+  font-size: 16px;
+  color: var(--text);
+  opacity: 0.8;
+  max-width: 720px;
+  margin: 0 auto 36px;
+}
+
+/* Hero 底部按钮组 */
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  /* 窄屏自动换行 */
+  flex-wrap: wrap;
+}
+
+/* ===== 示例三列网格 ===== */
+.examples-grid {
+  display: grid;
+  /* 三列等宽 */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.examples-grid .card .ico {
+  font-size: 26px;
+  margin-bottom: 12px;
+}
+
+.examples-grid .card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.examples-grid .card p {
+  font-size: 14px;
+  opacity: 0.82;
+  margin-bottom: 12px;
+}
+
+/* ===== 网格（特性双列） ===== */
+.feature-grid {
+  display: grid;
+  /* 两列等宽 */
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.feature-grid .card .ico {
+  font-size: 28px;
+  margin-bottom: 14px;
+}
+
+.feature-grid .card h3 {
+  font-size: 21px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.feature-grid .card p {
+  font-size: 15px;
+  opacity: 0.82;
+  margin-bottom: 16px;
+}
+
+/* ===== 通用文本块 ===== */
+.prose h3 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.prose p {
+  font-size: 16px;
+  opacity: 0.85;
+  margin-bottom: 14px;
+}
+
+.prose .card {
+  margin-bottom: 24px;
+}
+
+/* ===== 个人简介列表（About 页面） ===== */
+.intro-title {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-align: center;
+  margin: 0 0 48px;
+}
+
+.intro-list {
+  margin: 0;
+  padding: 0;
+}
+
+/* 主列表条目（段落 / 内联块） */
+.intro-list>p,
+.intro-list>div {
+  position: relative;
+  padding-left: 6px;
+  margin: 0 0 14px;
+  font-size: 16px;
+  /* 行高引用可配置变量 */
+  line-height: var(--about-line-height);
+  color: var(--text);
+}
+
+/* 子列表（如 Vue 教程链接区）容器 */
+.intro-sublist {
+  margin: 10px 0 4px;
+  padding: 12px 16px;
+  /* 主题自适应背景，避免暗色下白底看不清 */
+  background: var(--surface);
+  border-radius: 12px;
+}
+
+/* 子列表条目 */
+.intro-sublist>p,
+.intro-sublist>div {
+  position: relative;
+  margin: 0 0 10px;
+  font-size: 15px;
+  /* 与主列表共用同一行高变量 */
+  line-height: var(--about-line-height);
+  color: var(--text);
+}
+
+.intro-sublist>li:last-child {
+  /* 末项去掉下边距，避免多余空白 */
+  margin-bottom: 0;
+}
+
+/* 行内链接（如 GitHub 仓库、梯子链接） */
+.inline-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  /* 默认无下划线，悬停时出现 */
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition);
+}
+
+.inline-link:hover {
+  border-bottom-color: var(--accent);
+}
+
+/* ===== 列表（步骤 / 标签） ===== */
+.steps {
+  /* 去掉原生序号 */
+  list-style: none;
+  /* 初始化计数器 */
+  counter-reset: step;
+  margin: 16px 0 20px;
+}
+
+.steps li {
+  /* 每项自增计数 */
+  counter-increment: step;
+  position: relative;
+  /* 给左侧圆形序号留位置 */
+  padding-left: 34px;
+  margin-bottom: 12px;
+  font-size: 15px;
+  opacity: 0.85;
+}
+
+/* 用伪元素绘制圆形步骤序号 */
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  display: grid;
+  place-items: center;
+}
+
+/* 标签云容器 */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0 20px;
+}
+
+.chip {
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: 980px;
+  border: 1px solid var(--border);
+}
+
+/* ===== 工具卡 ===== */
+.tools-grid {
+  display: grid;
+  /* 两列等宽 */
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.tool-card h3 {
+  font-size: 21px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.tool-card .desc {
+  font-size: 15px;
+  opacity: 0.82;
+  margin-bottom: 16px;
+}
+
+.tool-card .sub {
+  font-size: 14px;
+  opacity: 0.7;
+  margin: 8px 0 4px;
+}
+
+.tool-card .example-name {
+  font-weight: 600;
+  color: var(--title);
+}
+
+/* ===== 资讯折叠（News 页面） ===== */
+.news-group {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  margin-bottom: 16px;
+  /* 圆角裁剪内部内容 */
+  overflow: hidden;
+}
+
+/* 日期折叠标题按钮 */
+.news-date {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 18px 24px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--title);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 折叠箭头 */
+.news-date .arrow {
+  transition: transform var(--transition);
+  opacity: 0.6;
+}
+
+/* 展开时箭头旋转 180° */
+.news-group.open .news-date .arrow {
+  transform: rotate(180deg);
+}
+
+/* 折叠内容区 */
+.news-items {
+  padding: 0 24px 20px;
+}
+
+/* 隐藏状态：完全不渲染 */
+.news-items[hidden] {
+  display: none;
+}
+
+/* 单条资讯 */
+.news-item {
+  padding: 16px 0;
+  border-top: 1px solid var(--border);
+}
+
+.news-item h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.news-item .summary {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 10px;
+}
+
+/* 资讯标签容器 */
+.news-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.news-tags span {
+  font-size: 12px;
+  color: var(--accent);
+  background: rgba(0, 113, 227, 0.1);
+  border-radius: 980px;
+  padding: 4px 10px;
+}
+
+[data-theme="dark"] .news-tags span {
+  background: rgba(41, 151, 255, 0.16);
+}
+
+/* ===== 页脚 ===== */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 0;
+  text-align: center;
+  color: var(--text);
+  opacity: 0.7;
+  font-size: 13px;
+  transition: border-color var(--transition);
+}
+
+/* ===== 响应式（移动端 ≤734px） ===== */
+@media (max-width: 734px) {
+  .page-section {
+    /* 移动端压缩区块上下间距 */
+    padding: 10px 0;
+  }
+
+  .hero {
+    padding: 88px 0 64px;
+  }
+
+  .nav {
+    padding: 0 14px;
+  }
+
+  .nav-tabs {
+    justify-self: center;
+    max-width: 100%;
+    /* Tab 过多时可横向滚动 */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    /* 隐藏滚动条（Firefox） */
+    scrollbar-width: none;
+  }
+
+  .nav-tabs::-webkit-scrollbar {
+    /* 隐藏滚动条（Webkit） */
+    display: none;
+  }
+
+  /* 网格在窄屏下改为单列 */
+  .feature-grid,
+  .tools-grid,
+  .examples-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== 无障碍：尊重“减少动态效果”系统设置 ===== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    scroll-behavior: auto;
+  }
+
+  .page-enter-active,
+  .page-leave-active {
+    transition: none;
+  }
+}
